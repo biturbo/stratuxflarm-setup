@@ -396,6 +396,10 @@ if [ ! -f "/usr/bin/dump1090" ]; then
     exit
 fi
 
+#cd /root/stratux/ogn/rtlsdr-ogn/
+#setup-rpi.sh
+#install-service.ch
+
 echo "${GREEN}...done${WHITE}"
 
 
