@@ -147,7 +147,7 @@ apt-get install -y pkg-config
 apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev python-pil python-daemon screen
 #pip install wiringpi
 #apt-get purge golang*
-
+apt-get autoremove
 echo "${GREEN}...done${WHITE}"
 
 
