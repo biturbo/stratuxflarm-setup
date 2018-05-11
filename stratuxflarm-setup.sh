@@ -145,7 +145,7 @@ apt-get remove -y hostapd
 apt-get install -y hostapd
 apt-get install -y pkg-config
 apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev python-pil python-daemon screen
-pip install wiringpi
+#pip install wiringpi
 #apt-get purge golang*
 
 echo "${GREEN}...done${WHITE}"
@@ -293,6 +293,9 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** Go bootstrap compiler installtion... *****${WHITE}"
 
+systemctl start ntp
+service stratux stop
+
 cd /root
 
 rm -rf go/
@@ -331,6 +334,14 @@ rm -f go1.*.linux*
 rm -rf /root/go_path
 mkdir -p /root/go_path
 
+cd /root/stratux
+export PATH=/root/go/bin:${PATH}
+export GOROOT=/root/go
+export GOPATH=/root/go_path
+cd /
+
+
+
 echo "${GREEN}...done${WHITE}"
 
 
@@ -361,22 +372,18 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
 
-cd /root
+cd /
+rm -Rf /root/stratux
+cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
+cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
 
-rm -rf stratux
-#git clone https://github.com/cyoung/stratux --recursive
-git clone https://github.com/0x74-0x62/stratux.git 
-
-cd stratux
-git checkout remotes/origin/devel/flarm_receiver
 
 #git fetch --tags
 #tag=$(git describe --tags `git rev-list --tags --max-count=1`)
 # checkout the latest release
 #git checkout $tag
-
-make all
-make install
+#make all
+#make install
 
 #### minimal sanity checks
 if [ ! -f "/usr/bin/gen_gdl90" ]; then
