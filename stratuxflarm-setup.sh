@@ -145,9 +145,11 @@ apt-get remove -y hostapd
 apt-get install -y hostapd
 apt-get install -y pkg-config
 apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev python-pil python-daemon screen
+apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs
 #pip install wiringpi
 #apt-get purge golang*
 apt-get autoremove
+
 echo "${GREEN}...done${WHITE}"
 
 
@@ -302,9 +304,6 @@ rm -rf go/
 rm -rf gobootstrap/
 
 if [ "$MACHINE" == "$ARM6L" ] || [ "$MACHINE" == "$ARM7L" ]; then
-    #### For RPi-2/3, is there any disadvantage to using the armv6l compiler?
-    # wget https://storage.googleapis.com/golang/go1.7.2.linux-armv6l.tar.gz --no-check-certificate
-    # tar -zxvf go1.7.2.linux-armv6l.tar.gz
     wget https://storage.googleapis.com/golang/go1.10.linux-armv6l.tar.gz --no-check-certificate
     tar -zxvf go1.10.linux-armv6l.tar.gz
 
