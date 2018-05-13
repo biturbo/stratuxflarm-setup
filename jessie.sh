@@ -139,7 +139,8 @@ echo "${YELLOW}**** Installing dependencies... *****${WHITE}"
  apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs screen minicom procserv nano
 #pip install wiringpi
 #apt-get purge golang*
-apt-get autoremove -y
+ apt-get upgrade -y
+ apt-get autoremove -y
 
 echo "${GREEN}...done${WHITE}"
 
