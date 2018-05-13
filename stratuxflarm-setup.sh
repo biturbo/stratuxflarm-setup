@@ -148,7 +148,8 @@ apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev pyth
 apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs
 #pip install wiringpi
 #apt-get purge golang*
-apt-get autoremove
+ apt-get upgrade -y
+ apt-get autoremove -y
 
 echo "${GREEN}...done${WHITE}"
 

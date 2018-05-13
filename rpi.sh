@@ -21,10 +21,8 @@ if ! grep -q "dtparam=audio=on" "/boot/config.txt"; then
     echo "dtparam=audio=on" >>/boot/config.txt
 fi
 
-if [ "$REVISION" == "$RPI2BxREV" ] || [ "$REVISION" == "$RPI2ByREV" ] || [ "$REVISION" == "$RPI0xREV" ] || [ "$REVISION" == "$RPI0yREV" ]; then
-    if ! grep -q "max_usb_current=1" "/boot/config.txt"; then
-        echo "max_usb_current=1" >>/boot/config.txt
-    fi
+if ! grep -q "max_usb_current=1" "/boot/config.txt"; then
+    echo "max_usb_current=1" >>/boot/config.txt
 fi
 
 if ! grep -q "dtparam=i2c1=on" "/boot/config.txt"; then
@@ -39,11 +37,8 @@ if ! grep -q "dtparam=i2c_arm_baudrate=400000" "/boot/config.txt"; then
     echo "dtparam=i2c_arm_baudrate=400000" >>/boot/config.txt
 fi
 
-if [ "$REVISION" == "$RPI3BxREV" ] || [ "$REVISION" == "$RPI3ByREV" ]; then
-    # move RPi3 Bluetooth off of hardware UART to free up connection for GPS
-    if ! grep -q "dtoverlay=pi3-miniuart-bt" "/boot/config.txt"; then
-        echo "dtoverlay=pi3-miniuart-bt" >>/boot/config.txt
-    fi
+if ! grep -q "dtoverlay=pi3-miniuart-bt" "/boot/config.txt"; then
+    echo "dtoverlay=pi3-miniuart-bt" >>/boot/config.txt
 fi
 
 if ! grep -q "dtparam=act_led_trigger=none" "/boot/config.txt"; then
@@ -54,9 +49,9 @@ if ! grep -q "dtparam=act_led_activelow=off" "/boot/config.txt"; then
     echo "dtparam=act_led_activelow=off" >>/boot/config.txt
 fi
 
-#echo "arm_freq=900" >>boot/config.txt
-#echo "sdram_freq=450" >>boot/config.txt
-#echo "core_freq=450" >>boot/config.txt
+echo "arm_freq=900" >>boot/config.txt
+echo "sdram_freq=450" >>boot/config.txt
+echo "core_freq=450" >>boot/config.txt
 
 echo "${GREEN}...done${WHITE}"
 
