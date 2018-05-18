@@ -119,18 +119,6 @@ EOT
 echo "${GREEN}...done${WHITE}"
 
 
-#################################################
-## Setup /usr/sbin/stratux-wifi.sh
-#################################################
-echo
-echo "${YELLOW}**** Setup /usr/sbin/stratux-wifi.sh *****${WHITE}"
-
-# we use a slightly modified version to handle more hardware scenarios
-chmod 755 ${SCRIPTDIR}/stratux-wifi.sh
-cp ${SCRIPTDIR}/stratux-wifi.sh /usr/sbin/stratux-wifi.sh
-
-echo "${GREEN}...done${WHITE}"
-
 
 #################################################
 ## Legacy wifiap cleanup

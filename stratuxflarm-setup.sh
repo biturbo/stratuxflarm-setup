@@ -162,23 +162,6 @@ echo "${GREEN}...done${WHITE}"
 
 
 ##############################################################
-##  Stratux USB devices udev rules
-##############################################################
-echo
-echo "${YELLOW}**** Stratux USB devices udev rules to /etc/udev/rules.d/10-stratux.rules *****${WHITE}"
-
-cat <<EOT > /etc/udev/rules.d/10-stratux.rules
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a8", SYMLINK+="ublox8"
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a7", SYMLINK+="ublox7"
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a6", SYMLINK+="ublox6"
-SUBSYSTEMS=="usb", ATTRS{idVendor}=="067b", ATTRS{idProduct}=="2303", SYMLINK+="prolific%n"
-SUBSYSTEMS=="usb", ATTRS{interface}=="Stratux Serialout", SYMLINK+="serialout%n"
-EOT
-
-echo "${GREEN}...done${WHITE}"
-
-
-##############################################################
 ##  SSH setup and config
 ##############################################################
 echo
@@ -351,6 +334,38 @@ ldconfig
 
 echo "${GREEN}...done${WHITE}"
 
+##############################################################
+##  OGN install and settings
+##############################################################
+echo
+echo "${YELLOW}**** OGN config... *****${WHITE}"
+
+cd /root
+rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
+
+wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
+tar xvzf rtlsdr-ogn-bin-ARM-latest.tgz
+
+cd rtlsdr-ogn
+
+chown root gsm_scan
+chmod a+s  gsm_scan
+chown root ogn-rf
+chmod a+s  ogn-rf
+chown root rtlsdr-ogn
+chmod a+s  rtlsdr-ogn
+
+	rm -f /var/run/ogn-rf.fifo
+	mkfifo /var/run/ogn-rf.fifo
+	cp -f ogn/rtlsdr-ogn/ogn-rf /usr/bin/
+	chmod a+s /usr/bin/ogn-rf
+	cp -f ogn/rtlsdr-ogn/ogn-decode /usr/bin/
+	chmod a+s /usr/bin/ogn-decode
+	
+rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
+
+echo "${GREEN}...done${WHITE}"
+
 
 ##############################################################
 ##  Stratux build and installation
@@ -476,30 +491,6 @@ echo
 echo "${YELLOW}**** Copying motd file... *****${WHITE}"
 
 cp ${SCRIPTDIR}/files/motd /etc/motd
-
-echo "${GREEN}...done${WHITE}"
-
-
-##############################################################
-## Copying fancontrol.py file
-##############################################################
-echo
-echo "${YELLOW}**** Copying fancontrol.py file... *****${WHITE}"
-
-chmod 755 ${SCRIPTDIR}/files/fancontrol.py
-cp ${SCRIPTDIR}/files/fancontrol.py /usr/bin/fancontrol.py
-
-echo "${GREEN}...done${WHITE}"
-
-
-##############################################################
-## Copying the hostapd_manager.sh utility
-##############################################################
-echo
-echo "${YELLOW}**** Copying the hostapd_manager.sh utility... *****${WHITE}"
-
-chmod 755 ${SCRIPTDIR}/files/hostapd_manager.sh
-cp ${SCRIPTDIR}/files/hostapd_manager.sh /usr/bin/hostapd_manager.sh
 
 echo "${GREEN}...done${WHITE}"
 
