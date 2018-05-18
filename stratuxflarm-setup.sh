@@ -127,29 +127,14 @@ apt-get dist-upgrade -y
 apt-get upgrade -y
 apt-get install -y git
 git config --global http.sslVerify false
-apt-get install -y iw
-apt-get install -y lshw
-apt-get install -y wget
-apt-get install -y isc-dhcp-server
-apt-get install -y tcpdump
-apt-get install -y cmake
-apt-get install -y libusb-1.0-0.dev
-apt-get install -y build-essential
-apt-get install -y mercurial
-apt-get install -y autoconf
-apt-get install -y fftw3
-apt-get install -y fftw3-dev
-apt-get install -y libtool
-apt-get install -y automake
+apt-get install -y iw wget lshw tcpdump cmake isc-dhcp-server libusb-1.0-0.dev build-essential
+apt-get install -y mercurial autoconf fftw3 fftw3-dev libtool automake pkg-config
 apt-get remove -y hostapd
 apt-get install -y hostapd
-apt-get install -y pkg-config
 apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev python-pil python-daemon screen
 apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs
-#pip install wiringpi
-#apt-get purge golang*
- apt-get upgrade -y
- apt-get autoremove -y
+apt-get upgrade -y
+apt-get autoremove -y
 
 echo "${GREEN}...done${WHITE}"
 
@@ -335,7 +320,7 @@ rm -f go1.*.linux*
 rm -rf /root/go_path
 mkdir -p /root/go_path
 
-cd /root/stratux
+cd /root/stratuxflarm
 export PATH=/root/go/bin:${PATH}
 export GOROOT=/root/go
 export GOPATH=/root/go_path
@@ -374,19 +359,12 @@ echo
 echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
 
 cd /
-rm -Rf /root/stratuxflarm
+rm -Rf /root/stratux
 rm -Rf /root/WiringPi
 
 cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
 #cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
-cd && git clone https://github.com/biturbo/stratuxflarm.git && cd stratuxflarm && make && make install
-
-#git fetch --tags
-#tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-# checkout the latest release
-#git checkout $tag
-#make all
-#make install
+cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
 
 #### minimal sanity checks
 if [ ! -f "/usr/bin/gen_gdl90" ]; then
@@ -398,10 +376,6 @@ if [ ! -f "/usr/bin/dump1090" ]; then
     echo "${BOLD}${RED}ERROR - dump1090 file missing, exiting...${WHITE}${NORMAL}"
     exit
 fi
-
-#cd /root/stratux/ogn/rtlsdr-ogn/
-#setup-rpi.sh
-#install-service.ch
 
 echo "${GREEN}...done${WHITE}"
 
@@ -455,8 +429,8 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** Setup /root/.stxAliases *****${WHITE}"
 
-if [ -f "/root/stratuxflarm/image/stxAliases.txt" ]; then
-    cp /root/stratuxflarm/image/stxAliases.txt /root/.stxAliases
+if [ -f "/root/stratux/image/stxAliases.txt" ]; then
+    cp /root/stratux/image/stxAliases.txt /root/.stxAliases
 else
     cp ${SCRIPTDIR}/files/stxAliases.txt /root/.stxAliases
 fi
@@ -504,17 +478,6 @@ echo "${YELLOW}**** Copying motd file... *****${WHITE}"
 cp ${SCRIPTDIR}/files/motd /etc/motd
 
 echo "${GREEN}...done${WHITE}"
-
-##############################################################
-## Copying rc.local file
-##############################################################
-#echo
-#echo "${YELLOW}**** Copying rc.local file... *****${WHITE}"
-
-#chmod 755 ${SCRIPTDIR}/files/rc.local
-#cp ${SCRIPTDIR}/files/rc.local /usr/bin/rc.local
-
-#echo "${GREEN}...done${WHITE}"
 
 
 ##############################################################
