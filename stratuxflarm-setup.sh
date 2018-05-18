@@ -304,6 +304,7 @@ cd /root
 rm -rf go/
 rm -rf gobootstrap/
 
+
 if [ "$MACHINE" == "$ARM6L" ] || [ "$MACHINE" == "$ARM7L" ]; then
     wget https://storage.googleapis.com/golang/go1.10.linux-armv6l.tar.gz --no-check-certificate
     tar -zxvf go1.10.linux-armv6l.tar.gz
@@ -373,7 +374,9 @@ echo
 echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
 
 cd /
-rm -Rf /root/stratux
+rm -Rf /root/stratuxflarm
+rm -Rf /root/WiringPi
+
 cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
 #cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
 cd && git clone https://github.com/biturbo/stratuxflarm.git && cd stratuxflarm && make && make install
@@ -452,8 +455,8 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** Setup /root/.stxAliases *****${WHITE}"
 
-if [ -f "/root/stratux/image/stxAliases.txt" ]; then
-    cp /root/stratux/image/stxAliases.txt /root/.stxAliases
+if [ -f "/root/stratuxflarm/image/stxAliases.txt" ]; then
+    cp /root/stratuxflarm/image/stxAliases.txt /root/.stxAliases
 else
     cp ${SCRIPTDIR}/files/stxAliases.txt /root/.stxAliases
 fi
