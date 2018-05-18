@@ -375,8 +375,8 @@ echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
 cd /
 rm -Rf /root/stratux
 cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
-cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
-
+#cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
+cd && git clone https://github.com/biturbo/stratuxflarm.git && cd stratux && make && make install
 
 #git fetch --tags
 #tag=$(git describe --tags `git rev-list --tags --max-count=1`)
