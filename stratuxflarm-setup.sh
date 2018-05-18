@@ -320,7 +320,7 @@ rm -f go1.*.linux*
 rm -rf /root/go_path
 mkdir -p /root/go_path
 
-cd /root/stratuxflarm
+cd /root/stratux
 export PATH=/root/go/bin:${PATH}
 export GOROOT=/root/go
 export GOPATH=/root/go_path
