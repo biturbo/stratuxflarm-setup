@@ -335,39 +335,6 @@ ldconfig
 echo "${GREEN}...done${WHITE}"
 
 ##############################################################
-##  OGN install and settings
-##############################################################
-echo
-echo "${YELLOW}**** OGN config... *****${WHITE}"
-
-cd /root
-rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
-
-wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
-tar xvzf rtlsdr-ogn-bin-ARM-latest.tgz
-
-cd rtlsdr-ogn
-
-chown root gsm_scan
-chmod a+s  gsm_scan
-chown root ogn-rf
-chmod a+s  ogn-rf
-chown root rtlsdr-ogn
-chmod a+s  rtlsdr-ogn
-
-	rm -f /var/run/ogn-rf.fifo
-	mkfifo /var/run/ogn-rf.fifo
-	cp -f ogn/rtlsdr-ogn/ogn-rf /usr/bin/
-	chmod a+s /usr/bin/ogn-rf
-	cp -f ogn/rtlsdr-ogn/ogn-decode /usr/bin/
-	chmod a+s /usr/bin/ogn-decode
-	
-rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
-
-echo "${GREEN}...done${WHITE}"
-
-
-##############################################################
 ##  Stratux build and installation
 ##############################################################
 echo
@@ -391,6 +358,39 @@ if [ ! -f "/usr/bin/dump1090" ]; then
     echo "${BOLD}${RED}ERROR - dump1090 file missing, exiting...${WHITE}${NORMAL}"
     exit
 fi
+
+echo "${GREEN}...done${WHITE}"
+
+
+##############################################################
+##  OGN install and settings
+##############################################################
+echo
+echo "${YELLOW}**** OGN config... *****${WHITE}"
+
+cd /root/stratux/ogn
+rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
+
+wget http://download.glidernet.org/arm/rtlsdr-ogn-bin-ARM-latest.tgz
+tar xvzf rtlsdr-ogn-bin-ARM-latest.tgz
+
+cd rtlsdr-ogn
+
+chown root gsm_scan
+chmod a+s  gsm_scan
+chown root ogn-rf
+chmod a+s  ogn-rf
+chown root rtlsdr-ogn
+chmod a+s  rtlsdr-ogn
+
+	rm -f /var/run/ogn-rf.fifo
+	mkfifo /var/run/ogn-rf.fifo
+	cp -f ogn/rtlsdr-ogn/ogn-rf /usr/bin/
+	chmod a+s /usr/bin/ogn-rf
+	cp -f ogn/rtlsdr-ogn/ogn-decode /usr/bin/
+	chmod a+s /usr/bin/ogn-decode
+	
+rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
 
 echo "${GREEN}...done${WHITE}"
 
