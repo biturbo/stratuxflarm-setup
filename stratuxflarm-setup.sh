@@ -347,7 +347,8 @@ rm -Rf /root/WiringPi
 
 cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
 #cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
-cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
+#cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
+cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
 
 #### minimal sanity checks
 if [ ! -f "/usr/bin/gen_gdl90" ]; then
