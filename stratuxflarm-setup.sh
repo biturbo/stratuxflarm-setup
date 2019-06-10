@@ -126,6 +126,7 @@ apt-mark hold plymouth
 apt-get dist-upgrade -y
 apt-get upgrade -y
 apt-get install -y git
+apt-get install -y wiringpi
 git config --global http.sslVerify false
 apt-get install -y iw wget lshw tcpdump cmake isc-dhcp-server libusb-1.0-0.dev build-essential
 apt-get install -y mercurial autoconf fftw3 fftw3-dev libtool automake pkg-config
