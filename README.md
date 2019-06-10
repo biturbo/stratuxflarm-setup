@@ -7,7 +7,8 @@ Commands to run the setup script:
     [login via command line]
 
     # sudo su -
-
+    # sudo apt install git
+    
     [Raspberry Pi boards]
 
     # raspi-config
