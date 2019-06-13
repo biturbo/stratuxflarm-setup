@@ -26,7 +26,7 @@ mkdir out
 
 
 # Copy the selfupdate file out of there..
-cp mnt/root/stratux/work/*.sh out
-rm -r mnt/root/stratux/work
+cp root/stratux/work/*.sh out
+rm -r root/stratux/work
 
 echo "Final image has been placed into $TMPDIR/out. Please install and test the image."
