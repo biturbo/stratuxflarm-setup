@@ -16,7 +16,7 @@ rm go1.12.4.linux-armv6l.tar.gz
 if [ "$1" == "dev" ]; then
     cp -r $SRCDIR .
 else
-    git clone --recursive https://github.com/b3nn0/stratux.git
+    git clone --recursive https://github.com/biturbo/stratux.git
 fi
 cd ../..
 
