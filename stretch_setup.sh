@@ -6,6 +6,7 @@ SRCDIR="$(realpath $(pwd)/..)"
 mkdir -p $TMPDIR
 cd $TMPDIR
 
+cd ../..
 
 cd root
 wget https://dl.google.com/go/go1.12.4.linux-armv6l.tar.gz
