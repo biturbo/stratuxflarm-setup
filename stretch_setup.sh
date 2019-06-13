@@ -21,12 +21,4 @@ fi
 cd ../..
 
 # Now download a specific kernel to run raspbian images in qemu and boot it..
-chroot mnt qemu-arm-static /bin/bash -c /root/stratux/image/mk_europe_edition_device_setup_stretch.sh
-mkdir out
-
-
-# Copy the selfupdate file out of there..
-cp root/stratux/work/*.sh out
-rm -r root/stratux/work
-
-echo "Final image has been placed into $TMPDIR/out. Please install and test the image."
+bash -c /root/stratux/image/mk_europe_edition_device_setup_stretch.sh
