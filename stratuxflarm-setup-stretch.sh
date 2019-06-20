@@ -113,13 +113,6 @@ cd ../..
 # Prepare wiringpi for fancontrol and some more tools
 cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make && make install
 
-ldconfig
-
-
-cd /root/stratux
-cp image/bashrc.txt /root/.bashrc
-source /root/.bashrc
-
 echo "${GREEN}...done${WHITE}"
 
 
@@ -242,7 +235,6 @@ cd /root
 rm -rf go/
 rm -rf gobootstrap/
 
-cd root
 wget https://dl.google.com/go/go1.12.4.linux-armv6l.tar.gz
 tar xzf go1.12.4.linux-armv6l.tar.gz
 rm go1.12.4.linux-armv6l.tar.gz
@@ -280,6 +272,13 @@ export GOMAXPROCS=1
 cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
 #cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
 
+ldconfig
+
+
+cd /root/stratux
+cp image/bashrc.txt /root/.bashrc
+source /root/.bashrc
+
 echo "${GREEN}...done${WHITE}"
 
 
@@ -304,12 +303,12 @@ chmod a+s  ogn-rf
 chown root rtlsdr-ogn
 chmod a+s  rtlsdr-ogn
 
-	rm -f /var/run/ogn-rf.fifo
-	mkfifo /var/run/ogn-rf.fifo
-	cp -f ogn/rtlsdr-ogn/ogn-rf /usr/bin/
-	chmod a+s /usr/bin/ogn-rf
-	cp -f ogn/rtlsdr-ogn/ogn-decode /usr/bin/
-	chmod a+s /usr/bin/ogn-decode
+#	rm -f /var/run/ogn-rf.fifo
+#	mkfifo /var/run/ogn-rf.fifo
+#	cp -f ogn/rtlsdr-ogn/ogn-rf /usr/bin/
+#	chmod a+s /usr/bin/ogn-rf
+#	cp -f ogn/rtlsdr-ogn/ogn-decode /usr/bin/
+#	chmod a+s /usr/bin/ogn-decode
 	
 rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
 
