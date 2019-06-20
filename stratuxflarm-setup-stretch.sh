@@ -90,7 +90,14 @@ fi
 echo
 echo "${YELLOW}**** Stop exisiting services... *****${WHITE}"
 
+systemctl enable isc-dhcp-server
+systemctl enable ssh
+systemctl disable ntp
+systemctl disable dhcpcd
+systemctl disable hciuart
+
 service stratux stop
+
 echo "${MAGENTA}stratux service stopped...${WHITE}"
 
 if [ -f "/etc/init.d/stratux" ]; then
@@ -126,17 +133,24 @@ apt-mark hold plymouth
 apt-get dist-upgrade -y
 apt-get upgrade -y
 apt-get install -y git
-apt-get install -y wiringpi
-git config --global http.sslVerify false
-apt-get install -y iw wget lshw tcpdump cmake isc-dhcp-server libusb-1.0-0.dev build-essential
-apt-get install -y mercurial autoconf fftw3 fftw3-dev libtool automake pkg-config
+#git config --global http.sslVerify false
+apt-get install -y iw wget lshw tcpdump cmake isc-dhcp-server libusb-1.0-0.dev 
+apt-get install -y  automake pkg-config
 apt-get remove -y hostapd
-apt-get install -y hostapd
-apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev python-pil python-daemon screen
+apt-get purge -y hostapd
+apt-get install -y libjpeg-dev python-pip screen
 apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs
 apt-get upgrade -y
 apt-get autoremove -y
 apt-get clean
+
+apt install --yes libjpeg8-dev libconfig9 hostapd isc-dhcp-server tcpdump git cmake \
+    libusb-1.0-0.dev build-essential mercurial autoconf fftw3 fftw3-dev libtool i2c-tools python-smbus \
+    python-pip python-dev python-pil python-daemon screen #libsdl1.2-dev
+
+cd ../..
+# Prepare wiringpi for fancontrol and some more tools
+cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make && make install
 
 echo "${GREEN}...done${WHITE}"
 
@@ -144,45 +158,45 @@ echo "${GREEN}...done${WHITE}"
 ##############################################################
 ##  Hardware check
 ##############################################################
-echo
-echo "${YELLOW}**** Hardware check... *****${WHITE}"
+#echo
+#echo "${YELLOW}**** Hardware check... *****${WHITE}"
 
-if [ "$REVISION" == "$RPI3BxREV" ] || [ "$REVISION" == "$RPI3ByREV" ]; then
-    echo
-    echo "${MAGENTA}Raspberry Pi3 detected...${WHITE}"
+#if [ "$REVISION" == "$RPI3BxREV" ] || [ "$REVISION" == "$RPI3ByREV" ]; then
+#    echo
+#    echo "${MAGENTA}Raspberry Pi3 detected...${WHITE}"
 
-    . ${SCRIPTDIR}/rpi.sh
+#    . ${SCRIPTDIR}/rpi.sh
 
-else
-    echo
-    echo "${BOLD}${RED}WARNING - unable to identify the board using /proc/cpuinfo...${WHITE}${NORMAL}"
+#else
+#    echo
+#    echo "${BOLD}${RED}WARNING - unable to identify the board using /proc/cpuinfo...${WHITE}${NORMAL}"
 
     #exit
-fi
+#fi
 
-echo "${GREEN}...done${WHITE}"
+#echo "${GREEN}...done${WHITE}"
 
 
 ##############################################################
 ##  SSH setup and config
 ##############################################################
-echo
-echo "${YELLOW}**** SSH setup and config... *****${WHITE}"
+#echo
+#echo "${YELLOW}**** SSH setup and config... *****${WHITE}"
 
-if [ ! -d /etc/ssh/authorized_keys ]; then
-    mkdir -p /etc/ssh/authorized_keys
-fi
+#if [ ! -d /etc/ssh/authorized_keys ]; then
+#    mkdir -p /etc/ssh/authorized_keys
+#fi
 
-cp -n /etc/ssh/authorized_keys/root{,.bak}
-cp -f ${SCRIPTDIR}/files/root /etc/ssh/authorized_keys/root
-chown root.root /etc/ssh/authorized_keys/root
-chmod 644 /etc/ssh/authorized_keys/root
+#cp -n /etc/ssh/authorized_keys/root{,.bak}
+#cp -f ${SCRIPTDIR}/files/root /etc/ssh/authorized_keys/root
+#chown root.root /etc/ssh/authorized_keys/root
+#chmod 644 /etc/ssh/authorized_keys/root
 
-cp -n /etc/ssh/sshd_config{,.bak}
-cp -f ${SCRIPTDIR}/files/sshd_config /etc/ssh/sshd_config
-rm -f /usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service
+#cp -n /etc/ssh/sshd_config{,.bak}
+#cp -f ${SCRIPTDIR}/files/sshd_config /etc/ssh/sshd_config
+#rm -f /usr/share/dbus-1/system-services/fi.epitest.hostap.WPASupplicant.service
 
-echo "${GREEN}...done${WHITE}"
+#echo "${GREEN}...done${WHITE}"
 
 
 ##############################################################
@@ -279,49 +293,10 @@ cd /root
 rm -rf go/
 rm -rf gobootstrap/
 
-
-if [ "$MACHINE" == "$ARM6L" ] || [ "$MACHINE" == "$ARM7L" ]; then
-    ## wget https://storage.googleapis.com/golang/go1.10.linux-armv6l.tar.gz --no-check-certificate
-    ## tar -zxvf go1.10.linux-armv6l.tar.gz
-    cd ../..
-
-    cd root
-    wget https://dl.google.com/go/go1.12.4.linux-armv6l.tar.gz
-    tar xzf go1.12.4.linux-armv6l.tar.gz
-    rm go1.12.4.linux-armv6l.tar.gz
-
-
-    if [ ! -d /root/go ]; then
-        echo "${BOLD}${RED}ERROR - go folder doesn't exist, exiting...${WHITE}${NORMAL}"
-        exit
-    fi
-
-elif [ "$MACHINE" == "$ARM64" ]; then
-    # ulimit -s 1024     # set the thread stack limit to 1mb
-    # ulimit -s          # check that it worked
-    # env GO_TEST_TIMEOUT_SCALE=10 GOROOT_BOOTSTRAP=/root/gobootstrap
-
-    wget https://github.com/jpoirier/GoAarch64Binaries/raw/master/go1.6.linux-armvAarch64.tar.gz --no-check-certificate
-    tar -zxvf go1.6.linux-armvAarch64.tar.gz
-    if [ ! -d /root/go ]; then
-        echo "${BOLD}${RED}ERROR - go folder doesn't exist, exiting...${WHITE}${NORMAL}"
-        exit
-    fi
-else
-    echo
-    echo "${BOLD}${RED}ERROR - unsupported machine type: $MACHINE, exiting...${WHITE}${NORMAL}"
-fi
-
-rm -f go1.*.linux*
-rm -rf /root/go_path
-mkdir -p /root/go_path
-
-cd /root/stratux
-export PATH=/root/go/bin:${PATH}
-export GOROOT=/root/go
-export GOPATH=/root/go_path
-cd /
-
+cd root
+wget https://dl.google.com/go/go1.12.4.linux-armv6l.tar.gz
+tar xzf go1.12.4.linux-armv6l.tar.gz
+rm go1.12.4.linux-armv6l.tar.gz
 
 
 echo "${GREEN}...done${WHITE}"
