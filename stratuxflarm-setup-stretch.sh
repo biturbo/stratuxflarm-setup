@@ -257,30 +257,6 @@ cd /root/librtlsdr/build && cmake .. && make && make install && ldconfig
 
 echo "${GREEN}...done${WHITE}"
 
-##############################################################
-##  Stratux build and installation
-##############################################################
-echo
-echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
-
-cd /
-rm -Rf /root/stratux
-
-export GOMAXPROCS=1
-
-#cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
-cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
-#cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
-
-ldconfig
-
-
-cd /root/stratux
-cp image/bashrc.txt /root/.bashrc
-source /root/.bashrc
-
-echo "${GREEN}...done${WHITE}"
-
 
 ##############################################################
 ##  OGN install and settings
@@ -313,6 +289,31 @@ chmod a+s  rtlsdr-ogn
 rm -rf rtlsdr-ogn-bin-ARM-latest.tgz
 
 echo "${GREEN}...done${WHITE}"
+
+##############################################################
+##  Stratux build and installation
+##############################################################
+echo
+echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
+
+cd /
+rm -Rf /root/stratux
+
+export GOMAXPROCS=1
+
+#cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
+cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
+#cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
+
+ldconfig
+
+
+cd /root/stratux
+cp image/bashrc.txt /root/.bashrc
+source /root/.bashrc
+
+echo "${GREEN}...done${WHITE}"
+
 
 
 ##############################################################
