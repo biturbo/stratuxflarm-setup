@@ -136,6 +136,7 @@ apt-get install -y libjpeg-dev i2c-tools python-smbus python-pip python-dev pyth
 apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs
 apt-get upgrade -y
 apt-get autoremove -y
+apt-get clean
 
 echo "${GREEN}...done${WHITE}"
 
@@ -267,6 +268,11 @@ echo "${YELLOW}**** Go bootstrap compiler installtion... *****${WHITE}"
 
 systemctl start ntp
 service stratux stop
+#systemctl enable isc-dhcp-server
+#systemctl enable ssh
+#systemctl disable ntp
+#systemctl disable dhcpcd
+#systemctl disable hciuart
 
 cd /root
 
@@ -275,8 +281,14 @@ rm -rf gobootstrap/
 
 
 if [ "$MACHINE" == "$ARM6L" ] || [ "$MACHINE" == "$ARM7L" ]; then
-    wget https://storage.googleapis.com/golang/go1.10.linux-armv6l.tar.gz --no-check-certificate
-    tar -zxvf go1.10.linux-armv6l.tar.gz
+    ## wget https://storage.googleapis.com/golang/go1.10.linux-armv6l.tar.gz --no-check-certificate
+    ## tar -zxvf go1.10.linux-armv6l.tar.gz
+    cd ../..
+
+    cd root
+    wget https://dl.google.com/go/go1.12.4.linux-armv6l.tar.gz
+    tar xzf go1.12.4.linux-armv6l.tar.gz
+    rm go1.12.4.linux-armv6l.tar.gz
 
 
     if [ ! -d /root/go ]; then
@@ -345,10 +357,10 @@ cd /
 rm -Rf /root/stratux
 rm -Rf /root/WiringPi
 
-cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
+#cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
 #cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
-#cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
-cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
+cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
+#cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
 
 #### minimal sanity checks
 if [ ! -f "/usr/bin/gen_gdl90" ]; then
@@ -474,8 +486,13 @@ fi
 EOT
 fi
 
-echo "${GREEN}...done${WHITE}"
+ldconfig
 
+cd /root/stratux
+cp image/bashrc.txt /root/.bashrc
+source /root/.bashrc
+
+echo "${GREEN}...done${WHITE}"
 
 ##############################################################
 ##  WiFi Access Point setup
