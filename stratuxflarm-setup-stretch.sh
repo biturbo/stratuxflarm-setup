@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Serge Guex
+# Copyright (c) 2019 Serge Guex
 # Distributable under the terms of The New BSD License
 # that can be found in the LICENSE file.
 
@@ -28,50 +28,7 @@ fi
 
 SCRIPTDIR="`pwd`"
 
-#set -e
-
-#outfile=setuplog
-#rm -f $outfile
-
-#exec > >(cat >> $outfile)
-#exec 2> >(cat >> $outfile)
-
-#### stdout and stderr to log file
-#exec > >(tee -a $outfile >&1)
-#exec 2> >(tee -a $outfile >&2)
-
 #### execute the script: bash stratux-setup.sh
-
-#### Revision numbers found via cat /proc/cpuinfo
-# [Labeled Section]                                       [File]
-# Dependencies                                          - stratux-setup.sh
-# Hardware check                                        - stratux-setup.sh
-# Setup /etc/hostapd/hostapd.conf                       - wifi-ap.sh
-# Edimax WiFi check                                     - stratux-wifi.sh
-# Boot config settings                                  - rpi.sh
-
-#
-RPI3BxREV=a02082
-RPI3ByREV=a22082
-
-#### unchecked
-RPIBPxREV=0010
-RPIAPxREV=0012
-RPIBPyREV=0013
-
-REVISION="$(cat /proc/cpuinfo | grep Revision | cut -d ':' -f 2 | xargs)"
-
-
-# Processor 
-# [Labeled Section]                                       [File]
-# Go bootstrap compiler installation                    - stratux-setup.sh
-#
-ARM6L=armv6l
-ARM7L=armv7l
-ARM64=aarch64
-
-MACHINE="$(uname -m)"
-
 
 echo "${MAGENTA}"
 echo "******************************************"
@@ -90,13 +47,13 @@ fi
 echo
 echo "${YELLOW}**** Stop exisiting services... *****${WHITE}"
 
+systemctl start ntp
+service stratux stop
 systemctl enable isc-dhcp-server
 systemctl enable ssh
 systemctl disable ntp
 systemctl disable dhcpcd
 systemctl disable hciuart
-
-service stratux stop
 
 echo "${MAGENTA}stratux service stopped...${WHITE}"
 
@@ -125,32 +82,43 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** Installing dependencies... *****${WHITE}"
 
-apt-get install -y rpi-update
+apt install --yes rpi-update
 rpi-update
 
-apt-get update
-apt-mark hold plymouth
-apt-get dist-upgrade -y
-apt-get upgrade -y
-apt-get install -y git
-#git config --global http.sslVerify false
-apt-get install -y iw wget lshw tcpdump cmake isc-dhcp-server libusb-1.0-0.dev 
-apt-get install -y  automake pkg-config
-apt-get remove -y hostapd
-apt-get purge -y hostapd
-apt-get install -y libjpeg-dev python-pip screen
-apt-get install -y libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs
-apt-get upgrade -y
-apt-get autoremove -y
-apt-get clean
+apt update
+apt dist-upgrade --yes
+apt upgrade --yes
+apt remove --yes hostapd
+apt purge --yes hostapd
 
-apt install --yes libjpeg8-dev libconfig9 hostapd isc-dhcp-server tcpdump git cmake \
-    libusb-1.0-0.dev build-essential mercurial autoconf fftw3 fftw3-dev libtool i2c-tools python-smbus \
-    python-pip python-dev python-pil python-daemon screen #libsdl1.2-dev
+apt install --yes git iw wget lshw tcpdump cmake isc-dhcp-server libusb-1.0-0.dev automake pkg-config \
+	libjpeg-dev python-pip libconfig-dev libfftw3-dev lynx telnet libjpeg-turbo-progs \
+	libconfig9 hostapd isc-dhcp-server tcpdump git cmake \
+    libusb-1.0-0.dev build-essential mercurial autoconf libfftw3-3 libfftw3-dev libtool i2c-tools python-smbus \
+    python-pip screen libconfig-dev python-dev python-pil python-daemon #libjpeg8-dev libjpeg62-turbo-dev  
+
+apt upgrade --yes
+apt autoremove --yes
+apt clean
+
+echo "${GREEN}...done${WHITE}"
+
+##############################################################
+##  wiringpi
+##############################################################
+echo
+echo "${YELLOW}**** Prepare wiringpi for fancontrol and some more tools... *****${WHITE}"
 
 cd ../..
 # Prepare wiringpi for fancontrol and some more tools
 cd /root && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make && make install
+
+ldconfig
+
+
+cd /root/stratux
+cp image/bashrc.txt /root/.bashrc
+source /root/.bashrc
 
 echo "${GREEN}...done${WHITE}"
 
@@ -159,22 +127,11 @@ echo "${GREEN}...done${WHITE}"
 ##  Hardware check
 ##############################################################
 #echo
-#echo "${YELLOW}**** Hardware check... *****${WHITE}"
+echo "${YELLOW}**** Hardware check... *****${WHITE}"
 
-#if [ "$REVISION" == "$RPI3BxREV" ] || [ "$REVISION" == "$RPI3ByREV" ]; then
-#    echo
-#    echo "${MAGENTA}Raspberry Pi3 detected...${WHITE}"
 
-#    . ${SCRIPTDIR}/rpi.sh
 
-#else
-#    echo
-#    echo "${BOLD}${RED}WARNING - unable to identify the board using /proc/cpuinfo...${WHITE}${NORMAL}"
-
-    #exit
-#fi
-
-#echo "${GREEN}...done${WHITE}"
+echo "${GREEN}...done${WHITE}"
 
 
 ##############################################################
@@ -280,14 +237,6 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** Go bootstrap compiler installtion... *****${WHITE}"
 
-systemctl start ntp
-service stratux stop
-#systemctl enable isc-dhcp-server
-#systemctl enable ssh
-#systemctl disable ntp
-#systemctl disable dhcpcd
-#systemctl disable hciuart
-
 cd /root
 
 rm -rf go/
@@ -308,17 +257,11 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** RTL-SDR library build... *****${WHITE}"
 
-cd /root
+rm -rf /root/librtlsdr
+git clone https://github.com/jpoirier/librtlsdr /root/librtlsdr
+mkdir -p /root/librtlsdr/build
+cd /root/librtlsdr/build && cmake .. && make && make install && ldconfig
 
-rm -rf librtlsdr
-git clone https://github.com/jpoirier/librtlsdr
-cd librtlsdr
-mkdir build
-cd build
-cmake ../
-make
-make install
-ldconfig
 
 echo "${GREEN}...done${WHITE}"
 
@@ -330,23 +273,12 @@ echo "${YELLOW}**** Stratux build and installation... *****${WHITE}"
 
 cd /
 rm -Rf /root/stratux
-rm -Rf /root/WiringPi
 
-#cd && git clone https://github.com/WiringPi/WiringPi.git && cd WiringPi/wiringPi && make static && make install-static
+export GOMAXPROCS=1
+
 #cd && git clone https://github.com/0x74-0x62/stratux.git && cd stratux && git checkout remotes/origin/devel/flarm_receiver && make && make install
 cd && git clone https://github.com/biturbo/stratux.git && cd stratux && make && make install
 #cd && git clone https://github.com/TomBric/stratux.git && cd stratux && make && make install
-
-#### minimal sanity checks
-if [ ! -f "/usr/bin/gen_gdl90" ]; then
-    echo "${BOLD}${RED}ERROR - gen_gdl90 file missing, exiting...${WHITE}${NORMAL}"
-    exit
-fi
-
-if [ ! -f "/usr/bin/dump1090" ]; then
-    echo "${BOLD}${RED}ERROR - dump1090 file missing, exiting...${WHITE}${NORMAL}"
-    exit
-fi
 
 echo "${GREEN}...done${WHITE}"
 
@@ -409,65 +341,88 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** System tweaks... *****${WHITE}"
 
-##### disable serial console
-if [ -f /boot/cmdline.txt ]; then
-    sed -i /boot/cmdline.txt -e "s/console=ttyAMA0,[0-9]\+ //"
-fi
+##### Some device setup - copy files from image directory ####
+cd /root/stratux/image
+#motd
+cp -f motd /etc/motd
 
-##### Set the keyboard layout to US.
-if [ -f /etc/default/keyboard ]; then
-    sed -i /etc/default/keyboard -e "/^XKBLAYOUT/s/\".*\"/\"us\"/"
-fi
+#dhcpd config
+cp -f dhcpd.conf /etc/dhcp/dhcpd.conf
 
-#### allow starting services
-if [ -f /usr/sbin/policy-rc.d ]; then
-    rm /usr/sbin/policy-rc.d
-fi
+#hostapd config
+cp -f hostapd.conf /etc/hostapd/hostapd.conf
+cp -f hostapd-edimax.conf /etc/hostapd/hostapd-edimax.conf
+#hostapd manager script
+cp -f hostapd_manager.sh /usr/sbin/hostapd_manager.sh
+chmod 755 /usr/sbin/hostapd_manager.sh
+#hostapd
+cp -f hostapd-edimax /usr/sbin/hostapd-edimax
+chmod 755 /usr/sbin/hostapd-edimax
+#remove hostapd startup scripts
+rm -f /etc/rc*.d/*hostapd /etc/network/if-pre-up.d/hostapd /etc/network/if-post-down.d/hostapd /etc/init.d/hostapd /etc/default/hostapd
+#interface config
+cp -f interfaces /etc/network/interfaces
+#custom hostapd start script
+cp stratux-wifi.sh /usr/sbin/
+chmod 755 /usr/sbin/stratux-wifi.sh
+
+#SDR Serial Script
+cp -f sdr-tool.sh /usr/sbin/sdr-tool.sh
+chmod 755 /usr/sbin/sdr-tool.sh
+
+#ping udev
+cp -f 99-uavionix.rules /etc/udev/rules.d
+
+#logrotate conf
+cp -f logrotate.conf /etc/logrotate.conf
+
+#fan/temp control script
+#remove old script
+rm -rf /usr/bin/fancontrol.py /usr/bin/fancontrol
+#install new program
+cp ../fancontrol /usr/bin
+chmod 755 /usr/bin/fancontrol
+/usr/bin/fancontrol remove
+/usr/bin/fancontrol install
+
+#isc-dhcp-server config
+cp -f isc-dhcp-server /etc/default/isc-dhcp-server
+
+#sshd config
+cp -f sshd_config /etc/ssh/sshd_config
+
+#udev config
+cp -f 10-stratux.rules /etc/udev/rules.d
+
+#stratux files
+cp -f ../libdump978.so /usr/lib/libdump978.so
+
+#debug aliases
+cp -f stxAliases.txt /root/.stxAliases
+
+#rtl-sdr setup
+cp -f rtl-sdr-blacklist.conf /etc/modprobe.d/
+
+#system tweaks
+cp -f modules.txt /etc/modules
+
+#boot settings
+cp -f config.txt /boot/
+
+cp /root/stratux/test/screen/screen.py /usr/bin/stratux-screen.py
+mkdir -p /etc/stratux-screen/
+cp -f /root/stratux/test/screen/stratux-logo-64x64.bmp /etc/stratux-screen/stratux-logo-64x64.bmp
+cp -f /root/stratux/test/screen/CnC_Red_Alert.ttf /etc/stratux-screen/CnC_Red_Alert.ttf
+
+#startup scripts
+cp -f ../__lib__systemd__system__stratux.service /lib/systemd/system/stratux.service
+cp -f ../__root__stratux-pre-start.sh /root/stratux-pre-start.sh
+cp -f rc.local /etc/rc.local
+
+
 
 echo "${GREEN}...done${WHITE}"
 
-
-#################################################
-## Setup /root/.stxAliases
-#################################################
-echo
-echo "${YELLOW}**** Setup /root/.stxAliases *****${WHITE}"
-
-if [ -f "/root/stratux/image/stxAliases.txt" ]; then
-    cp /root/stratux/image/stxAliases.txt /root/.stxAliases
-else
-    cp ${SCRIPTDIR}/files/stxAliases.txt /root/.stxAliases
-fi
-
-if [ ! -f "/root/.stxAliases" ]; then
-    echo "${BOLD}${RED}ERROR - /root/.stxAliases file missing, exiting...${WHITE}${NORMAL}"
-    exit
-fi
-
-echo "${GREEN}...done${WHITE}"
-
-
-#################################################
-## Add .stxAliases command to /root/.bashrc
-#################################################
-echo
-echo "${YELLOW}**** Add .stxAliases command to /root/.bashrc *****${WHITE}"
-
-if ! grep -q ".stxAliases" "/root/.bashrc"; then
-cat <<EOT >> /root/.bashrc
-if [ -f /root/.stxAliases ]; then
-. /root/.stxAliases
-fi
-EOT
-fi
-
-ldconfig
-
-cd /root/stratux
-cp image/bashrc.txt /root/.bashrc
-source /root/.bashrc
-
-echo "${GREEN}...done${WHITE}"
 
 ##############################################################
 ##  WiFi Access Point setup
@@ -475,31 +430,8 @@ echo "${GREEN}...done${WHITE}"
 echo
 echo "${YELLOW}**** WiFi Access Point setup... *****${WHITE}"
 
-. ${SCRIPTDIR}/wifi-ap.sh
+#. ${SCRIPTDIR}/wifi-ap.sh
 
-
-##############################################################
-## Copying motd file
-##############################################################
-echo
-echo "${YELLOW}**** Copying motd file... *****${WHITE}"
-
-cp ${SCRIPTDIR}/files/motd /etc/motd
-
-echo "${GREEN}...done${WHITE}"
-
-
-##############################################################
-## Disable ntpd autostart
-##############################################################
-echo
-echo "${YELLOW}**** Disable ntpd autostart... *****${WHITE}"
-
-if which ntp >/dev/null; then
-    systemctl disbable ntp
-fi
-
-echo "${GREEN}...done${WHITE}"
 
 
 ##############################################################
